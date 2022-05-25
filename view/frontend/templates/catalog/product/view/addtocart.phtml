@@ -1,0 +1,65 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+/** @var $block \Magento\Catalog\Block\Product\View */
+?>
+<?php $_product = $block->getProduct(); ?>
+<?php $buttonTitle = __('Add to Cart'); ?>
+<?php if ($_product->isSaleable()) :?>
+<div class="box-tocart">
+    <div class="fieldset">
+        <?php if ($block->shouldRenderQuantity()) :?>
+        <div class="field qty">
+            <label class="label" for="qty"><span><?= $block->escapeHtml(__('Qty')) ?></span></label>
+            <!-- Initializing the component named qty_change -->
+            <script type="text/x-magento-init">
+            {
+                "*": {
+                        "Magento_Ui/js/core/app": {
+                            "components": {
+                                "qty_change": {
+                                    "component": "M2Developer_Knockout/js/view/product/view/qty_change",
+                                    "defaultQty": <?php echo $block->getProductDefaultQty() * 1 ?>
+                                }
+                            }
+                        }
+                }
+            }
+            </script>
+            <div class="control" data-bind="scope: 'qty_change'"> <!-- Binding the component named qty_change -->
+                <button data-bind="click: decreaseQty">-</button> <!-- Binding the function decreaseQty -->
+                <input data-bind="value: qty()"                   
+                       type="number"
+                       name="qty"
+                       id="qty"
+                       min="0"                       
+                       title="<?= $block->escapeHtmlAttr(__('Qty')) ?>"
+                       class="input-text qty"
+                       data-validate="<?= $block->escapeHtml(json_encode($block->getQuantityValidators())) ?>"
+                       /> <!-- Binding the function qty for defaultQty -->
+                       <button data-bind="click: increaseQty">+</button> <!-- Binding the function increaseQty -->
+            </div>
+        </div>
+        <?php endif; ?>
+        <div class="actions">
+            <button type="submit"
+                    title="<?= $block->escapeHtmlAttr($buttonTitle) ?>"
+                    class="action primary tocart"
+                    id="product-addtocart-button" disabled>
+                <span><?= $block->escapeHtml($buttonTitle) ?></span>
+            </button>
+            <?= $block->getChildHtml('', true) ?>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+<script type="text/x-magento-init">
+    {
+        "#product_addtocart_form": {
+            "Magento_Catalog/js/validate-product": {}
+        }
+    }
+</script>
